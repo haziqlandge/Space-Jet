@@ -1,28 +1,43 @@
 let rows = 8;
 let columns = 5;
+let score = 0;
+const tileSize = document.getElementById('tile').offsetHeight; 
+// Gets the size of 1 tile from an invisible div
+console.log("Tile size: ", tileSize);
 
-const tileSize = document.getElementById('tile').offsetHeight; // Gets the size of 1 tile from an invisible div
+// Setting up canvas and initializing 2D context to draw 2D graphics
 let canvas = document.getElementById('board');
-canvas.width = columns * tileSize; // Setting up the canvas size
+canvas.width = columns * tileSize; 
 canvas.height = rows * tileSize;
-let context = canvas.getContext('2d'); // Set up context to draw 2D graphics
+let context = canvas.getContext('2d'); 
 
 let jet = {
     x: tileSize * parseInt(columns / 2),
     y: tileSize * (rows - 1),
     height: tileSize,
     width: tileSize
-}; // Jet object stores its x, y coords and height/width
+}; // Jet object stores its x, y coordinates and height/width
 
 let jetImg = new Image(); // Create an img object for jet
 jetImg.src = "/jet.png";
-
-document.addEventListener('keydown', move);
+jetImg.onload = function() {
+    context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height); // Draw jet once image is loaded
+};
 
 //initializing variables required to create obstacles
 let objects = [];
 let positionFound;
-let obstacleSpeed = 2;
+let obstacleSpeed = 1.5;
+let collide = false; //initialize collide, if true stop game
+
+function start(){
+    document.removeEventListener('keydown', start); 
+    document.addEventListener('keydown', move);
+    setInterval(randomObjs, 1500); // Call randomObjs() every 1.5 seconds
+    requestAnimationFrame(update); // This function starts the loop for frame updates
+}
+
+document.addEventListener('keydown', start); // press any button => calls start
 
 /*
   Function to create obstacles:
@@ -67,34 +82,30 @@ function objDraw() {
     }
 }
 
-// When the window loads, start drawing
-window.onload = function() {
-    jetImg.onload = function() {
-        context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height); // Draw jet once image is loaded
-    };
-
-    randomObjs(); // Generate obstacles at random positions
-    requestAnimationFrame(update); // This function starts the loop for frame updates
-};
-
 // Function to update the canvas every frame
 function update() {
-    
-    context.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire board and update the next frame
-    objDraw(); // Draw obstacles every frame
-    context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height); // Draw jet
-    obsMove(); // Move obstacles downwards
-    nextWave(); // create next wave
-    requestAnimationFrame(update); // Continue updating the frame
+    if(!collide){
+        context.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire board
+        objDraw(); // Draw obstacles every frame
+        context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height);// Draw jet in updated position
+        obsMove(); // Move obstacles
+        score+=1;
+        document.getElementById("txt").textContent = `Score: ${score}`;
+        if(score >= 10000) // if score above 10k inc speed
+            obstacleSpeed =2;
+        requestAnimationFrame(update); // Continue updating the frame
+        collision();
+    }
 }
 
 // Function to move the jet based on key presses
 function move(e) {
-
-    if (e.key === 'ArrowLeft' && jet.x > 0) {
-        jet.x -= tileSize; // Move jet left
-    } else if (e.key === 'ArrowRight' && jet.x < canvas.width - tileSize) {
-        jet.x += tileSize; // Move jet right
+    if(!collide){
+        if (e.key === 'ArrowLeft' && jet.x > 0) {
+            jet.x -= tileSize; // Move jet left
+        } else if (e.key === 'ArrowRight' && jet.x < canvas.width - tileSize) {
+            jet.x += tileSize; // Move jet right
+        }
     }
 }
 
@@ -102,22 +113,33 @@ function obsMove() {
     // Move obstacles down the screen
     for (let i = 0; i < objects.length; i++) {
         if (objects[i].y < tileSize * rows) {
-            objects[i].y += obstacleSpeed; // Move obstacle down by obstacleSpeed by default =1
+            objects[i].y += obstacleSpeed; 
+            // Move obstacle down by above defined speed (default 1.5)
         }
     }
-
+    
     // Remove obstacles that have moved outside the screen
     if (objects.length > 0 && objects[0].y >= tileSize * rows) {
         objects.shift(); // Removes one element from object array that is at 0 index
-        console.log(objects);
     }
 }
-
-// checks for every other row whether first row of obstacles is in odd y coords
-// if yes then it will create another wave
-function nextWave(){
-        if(objects[0].y === 1*tileSize || objects[0].y === 3*tileSize || 
-            objects[0].y === 5*tileSize || objects[0].y === 7*tileSize){
-                randomObjs();
+/*
+Starts a loop if there are any elements in objects array
+it will then check if the element's x position = jet's x position if AND
+if the top (50%)portion of the obstacle ‾‾ is in the same area as the jet's occupied area from jet.y(start of jet) to jet.y+height (end of jet in y posn)
+if not then i am checking whether the bottom(50%) part is in the same area as jet.y and jet.y+height.
+if the conditions are satisfied then the jet has colided.
+*/
+function collision(){
+    for(let i = 0; i<objects.length; i++){
+        if((objects[i].x == jet.x) && ((objects[i].y >= jet.y && objects[i].y <= jet.height+jet.y) || 
+        objects[i].y + objects[i].height  >= jet.y && objects[i].y + objects[i].height <= jet.height+jet.y)){
+            collide = true;
+            console.log(`Jet X: ${jet.x} Jet Y: ${jet.y}, ${jet.y+64}`);
+            console.log(`Obs X: ${objects[i].x} Obs Y: ${objects[i].y}, ${objects[i].y+64} `);
+            console.log(`collision: ${collide}`);
+            console.log(`Final Score: ${score}`);
+            break;
+        }
     }
 }
