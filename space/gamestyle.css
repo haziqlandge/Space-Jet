@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Chakra Petch";
+}
+body{
+    background-color: #131019ef;
+    
+}
+.ribbon{
+    display: flex;
+    position: fixed;
+    z-index: 10;
+    width: 100vw;
+    height: 10vh;
+    background-color: black;
+    border-bottom: darkcyan 1px solid;
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.774);
+    align-items: center;
+}
+.buttons{
+    display: flex;
+    gap: 1rem;
+    position: absolute;
+    right: 1.8rem;
+    
+}
+.gameName{
+    display: flex;
+    position: absolute;
+    left: 1.3rem;
+}
+.rib-bt{
+    padding: 0.5rem 1.2rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #beb6d2;
+    background-color: transparent;
+    border: 0px;
+    border-radius: 0.24rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.rib-bt:hover{
+    color: #131019;
+    background-color: #fa1e4e;
+    box-shadow: 0 0 1rem #790a22;
+}
+.container{
+    position: absolute;
+    top: 12vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+#board {
+    background-color: black; 
+}
+#txt{
+    color:white;
+    margin-bottom: -1rem;
+}
