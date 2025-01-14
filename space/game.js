@@ -64,7 +64,7 @@ function randomObjs() {
                     x: rndmTile * tileSize,
                     y: -1*tileSize,
                     width: tileSize,
-                    height: tileSize
+                    height: tileSize/2
                 });
                 occupied[rndmTile] = true; // Mark the tile as occupied
                 positionFound = true;
