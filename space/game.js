@@ -29,10 +29,13 @@ let objects = [];
 let positionFound;
 let obstacleSpeed = 1.5;
 let collide = false; //initialize collide, if true stop game
+let laser = null;
+let hasLaser = false;
 
 function start(){
     document.removeEventListener('keydown', start); 
     document.addEventListener('keydown', move);
+    document.addEventListener('keydown', shootLaser); 
     setInterval(randomObjs, 1500); // Call randomObjs() every 1.5 seconds
     requestAnimationFrame(update); // This function starts the loop for frame updates
 }
@@ -71,6 +74,19 @@ function randomObjs() {
             }
         }
     }
+    // if there is no laser on screen then 10% chance to generate
+    if (!laser && Math.random() < 0.1) {
+        let rndmTile;
+        do {
+            rndmTile = Math.floor(Math.random() * 5);
+        } while (occupied[rndmTile]);
+    // find a randomtile if it is occupied then do it again until we find non occupied random one
+        laser = {
+            x: rndmTile * tileSize + tileSize / 2,
+            y: -1 * tileSize + tileSize / 4,
+            radius: 12
+            }; // tileSize/2 cus we want it to be centred in the tile x coord similarly for y i did /4 
+    }
 }
 
 // Function to draw obstacles
@@ -80,6 +96,13 @@ function objDraw() {
         context.fillRect(objects[i].x, objects[i].y, objects[i].width, objects[i].height); 
         // Draw obstacle at its position
     }
+    if (laser) {
+        context.fillStyle = "blue";
+        context.beginPath();
+        context.arc(laser.x, laser.y, laser.radius, 0, Math.PI * 2); // x,y, radius, start angle, end angle
+        context.fill();
+    } // if there is a laser on screen with before mentioned coords in the randomObjs func then draw it
+// beginPath resets previous canvas draw logic of squares other wise the circle would be drawn from last rectangle n stick to it
 }
 
 // Function to update the canvas every frame
@@ -109,6 +132,24 @@ function move(e) {
     }
 }
 
+function clearColumn(columnIndex) {
+    objects = objects.filter(obj => obj.x / tileSize !== columnIndex);
+} 
+/*basically .filter iterates over each element of the objects array 
+where obj is a name i have given to each element of objects array
+so obj is the parameter i have passed and on the right side of => is the condition
+so if the condition is true that obstacle is added to the objects array
+so here the logic is if the x coords of the obstacles and the jet are same then
+those obstacles will be removed.
+*/
+
+function shootLaser(e) {
+    if (e.key === ' ' && hasLaser) {
+        clearColumn(jet.x / tileSize);
+        hasLaser = false;
+    }
+} //if user has a laser and presses space then call the clear fn and then use up the laser
+
 function obsMove() {
     // Move obstacles down the screen
     for (let i = 0; i < objects.length; i++) {
@@ -117,7 +158,12 @@ function obsMove() {
             // Move obstacle down by above defined speed (default 1.5)
         }
     }
-    
+    if (laser) {
+        laser.y += obstacleSpeed;
+        if (laser.y - laser.radius >= tileSize * rows) {
+            laser = null;
+        } // if gone outside screen set laser object to null so it can be created again
+    }    
     // Remove obstacles that have moved outside the screen
     if (objects.length > 0 && objects[0].y >= tileSize * rows) {
         objects.shift(); // Removes one element from object array that is at 0 index
@@ -142,4 +188,10 @@ function collision(){
             break;
         }
     }
+    if (laser && 
+        laser.x >= jet.x && laser.x <= jet.x + jet.width && 
+        laser.y >= jet.y && laser.y <= jet.y + jet.height) {
+        hasLaser = true;
+        laser = null;
+    }  // if user colides with laser then set hasLaser to true allowing user to shoot and set laser to null so a new laser obj can be created in randomObjs
 }
