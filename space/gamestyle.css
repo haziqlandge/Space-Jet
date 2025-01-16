@@ -65,3 +65,23 @@ body{
     color:white;
     margin-bottom: -1rem;
 }
+
+#popUp{
+    color:white;
+    position: fixed;
+    z-index: 9;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    height: 30vh;
+    width: 40vh;
+    padding: 3vh 0;
+    background-color: #131019de;
+
+    border-radius: 3vh;
+    border: 1px solid darkcyan;
+}
