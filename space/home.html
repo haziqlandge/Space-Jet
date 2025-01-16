@@ -18,6 +18,17 @@
         <canvas id="board" data-tileSize="4rem"></canvas>
     </div>
     <div id="tile" style="height:4rem; background-color: transparent;"></div>
+    <div id = popUp>
+        <div class="popTop">
+            <h3 style="justify-content: center;">You Died</h3>
+        </div>
+        <div class="popMid">
+            <h3 id = "dispScore"></h3>
+        </div>
+        <div class="popBotm">
+            <button id = "restart" class="rib-bt" onclick="restart()">restart</button>
+        </div>
+    </div>
     <script src="game.js"></script>
 </body>
 </html>
