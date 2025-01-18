@@ -19,7 +19,7 @@ let jet = {
 }; // Jet object stores its x, y coordinates and height/width
 
 let jetImg = new Image(); // Create an img object for jet
-jetImg.src = "/jet.png";
+jetImg.src = "jet.png";
 jetImg.onload = function() {
     context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height); // Draw jet once image is loaded
 };
