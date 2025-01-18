@@ -59,7 +59,11 @@ body{
 
 }
 #board {
-    background-color: black; 
+    background-image: url(galaxybg.png);
+    background-size:cover;
+    background-repeat: no-repeat;
+    border: 1px solid darkcyan;
+    border-radius: 7px;
 }
 #txt{
     color:white;

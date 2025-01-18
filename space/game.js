@@ -14,7 +14,7 @@ let context = canvas.getContext('2d');
 let jet = {
     x: tileSize * parseInt(columns / 2),
     y: tileSize * (rows - 1),
-    height: tileSize,
+    height: tileSize*3/4,
     width: tileSize
 }; // Jet object stores its x, y coordinates and height/width
 
@@ -32,6 +32,8 @@ let collide = false; //initialize collide, if true stop game
 let laser = null;
 let hasLaser = false;
 let randomObjsTimeout; // a variable which will store our timeout id
+let objImg = new Image(); //creating obstacle img 
+objImg.src = "obj.png";
 
 function start(){
     document.removeEventListener('keydown', start); 
@@ -110,9 +112,8 @@ function randomObjs() {
 
 // Function to draw obstacles
 function objDraw() {
-    context.fillStyle = "green"; // Set color for obstacles
     for (let i = 0; i < objects.length; i++) {
-        context.fillRect(objects[i].x, objects[i].y, objects[i].width, objects[i].height); 
+        context.drawImage(objImg, objects[i].x, objects[i].y, objects[i].width, objects[i].height);
         // Draw obstacle at its position
     }
     if (laser) {
@@ -246,7 +247,7 @@ function restart(){
     jet = {
         x: tileSize * parseInt(columns / 2),
         y: tileSize * (rows - 1),
-        height: tileSize,
+        height: tileSize*3/4,
         width: tileSize
     };
 
