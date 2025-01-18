@@ -19,7 +19,7 @@ let jet = {
 }; // Jet object stores its x, y coordinates and height/width
 
 let jetImg = new Image(); // Create an img object for jet
-jetImg.src = "jet.png";
+jetImg.src = "space/jet.png";
 jetImg.onload = function() {
     context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height); // Draw jet once image is loaded
 };
@@ -33,7 +33,7 @@ let laser = null;
 let hasLaser = false;
 let randomObjsTimeout; // a variable which will store our timeout id
 let objImg = new Image(); //creating obstacle img 
-objImg.src = "obj.png";
+objImg.src = "space/obj.png";
 
 function start(){
     document.removeEventListener('keydown', start); 
