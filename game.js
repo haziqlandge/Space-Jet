@@ -35,6 +35,8 @@ let randomObjsTimeout; // a variable which will store our timeout id
 let objImg = new Image(); //creating obstacle img 
 objImg.src = "obj.png";
 
+let laserImg = new Image();
+laserImg.src = "Laser_anim.png"
 function start(){
     document.removeEventListener('keydown', start); 
     document.addEventListener('keydown', move);
@@ -177,8 +179,45 @@ those obstacles will be removed.
 
 function shootLaser(e) {
     if (e.key === ' ' && hasLaser) {
-        clearColumn(jet.x / tileSize);
-        hasLaser = false;
+        hasLaser = false; // Consume the laser
+        let startTime = performance.now();
+        let lastFrameTime = startTime;
+        let frameIndex = 0;
+
+        const fastFrameDelay = 20; 
+        const normalFrameDelay = 80; 
+        const totalFrames = 14;
+        const animationDuration = fastFrameDelay * 5 + normalFrameDelay * 9; // Total animation duration
+
+        function animateCharging() {
+            let currentTime = performance.now();
+            let elapsedTime = currentTime - startTime;
+            let timeSinceLastFrame = currentTime - lastFrameTime;
+
+            // Determine the delay based on the frameIndex
+            let frameDelay = frameIndex < 5 ? fastFrameDelay : normalFrameDelay;
+
+            if (elapsedTime < animationDuration) {
+                if (timeSinceLastFrame >= frameDelay) {
+                    
+                    context.drawImage(laserImg, frameIndex * 64, 0, 64, 448, jet.x, 0, 64, 448);
+                    
+                    if (frameIndex >= 10) {
+                        clearColumn(jet.x / tileSize);
+                    }
+
+                    frameIndex = (frameIndex + 1) % totalFrames; // Cycle through frames
+                    lastFrameTime = currentTime; // Update the last frame time
+                }
+                else
+                    context.drawImage(laserImg, frameIndex * 64, 0, 64, 448, jet.x, 0, 64, 448);
+                context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height);
+                requestAnimationFrame(animateCharging);
+            }
+        }
+
+        // Start the animation loop
+        animateCharging();
     }
 } //if user has a laser and presses space then call the clear fn and then use up the laser
 
