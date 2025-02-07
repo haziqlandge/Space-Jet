@@ -24,6 +24,9 @@ jetImg.onload = function() {
     context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height); // Draw jet once image is loaded
 };
 
+let laserImg = new Image();
+laserImg.src = "Laser_anim.png";
+
 //initializing variables required to create obstacles
 let objects = [];
 let positionFound;
@@ -35,8 +38,8 @@ let randomObjsTimeout; // a variable which will store our timeout id
 let objImg = new Image(); //creating obstacle img 
 objImg.src = "obj.png";
 
-let laserImg = new Image();
-laserImg.src = "Laser_anim.png"
+const totalFrames = 14;
+
 function start(){
     document.removeEventListener('keydown', start); 
     document.addEventListener('keydown', move);
@@ -165,9 +168,14 @@ function move(e) {
         }
     }
 }
+let explosionImg = new Image();
+explosionImg.src = "explosion.png"; // Make sure to use the correct sprite sheet
 
+let destroyThese;
 function clearColumn(columnIndex) {
+    destroyThese = objects.filter(obj => obj.x / tileSize == columnIndex);
     objects = objects.filter(obj => obj.x / tileSize !== columnIndex);
+    destruction(destroyThese);
 } 
 /*basically .filter iterates over each element of the objects array 
 where obj is a name i have given to each element of objects array
@@ -176,42 +184,81 @@ so if the condition is true that obstacle is added to the objects array
 so here the logic is if the x coords of the obstacles and the jet are same then
 those obstacles will be removed.
 */
-
+function destruction(n){
+    let destroyThese = n;
+    let startTime = performance.now(); //gets the time when space was pressed
+    let lastFrameTime = startTime; //initialize the last frame's time
+    let frameIndex = 0;
+    const totalFramesExplode = 11;
+    const frameDelayExplode = 50;
+    const animationDurationExplode = totalFramesExplode * frameDelayExplode;
+    let destroyTheseOnes;
+    function animateDestruction(){
+        let currentTime = performance.now(); 
+        let elapsedTime = currentTime - startTime; 
+        let timeSinceLastFrame = currentTime - lastFrameTime; 
+        if (elapsedTime < animationDurationExplode) {
+            if (timeSinceLastFrame >= frameDelayExplode) {
+                for(let i = 0; i< destroyThese.length; i++){
+                    destroyTheseOnes = destroyThese[i];
+                    destroyThese[i].y += obstacleSpeed;
+                    context.drawImage(explosionImg, frameIndex * 64, 0, 64, 64, destroyTheseOnes.x, destroyTheseOnes.y, 64, 64);
+                }
+                frameIndex = (frameIndex + 1) % totalFrames; // Cycle through frames
+                lastFrameTime = currentTime;
+            }
+            else{
+                for(let i = 0; i< destroyThese.length; i++){
+                    destroyThese[i].y += obstacleSpeed;
+                    destroyTheseOnes = destroyThese[i];
+                    context.drawImage(explosionImg, frameIndex * 64, 0, 64, 64, destroyTheseOnes.x, destroyTheseOnes.y, 64, 64);}
+            }
+            // Continue the animation loop as long as animation duration has not been reached
+            requestAnimationFrame(animateDestruction);
+        }
+    
+    }
+    animateDestruction();
+}
 function shootLaser(e) {
     if (e.key === ' ' && hasLaser) {
         hasLaser = false; // Consume the laser
-        let startTime = performance.now();
-        let lastFrameTime = startTime;
+        let startTime = performance.now(); //gets the time when space was pressed
+        let lastFrameTime = startTime; //initialize the last frame's time
         let frameIndex = 0;
-
-        const fastFrameDelay = 20; 
-        const normalFrameDelay = 80; 
-        const totalFrames = 14;
-        const animationDuration = fastFrameDelay * 5 + normalFrameDelay * 9; // Total animation duration
+        const fastFrameDelay = 5; // Delay for the first 5 frames (faster) 
+        const normalFrameDelay = 80; // Delay for the next 9 frames (current delay) 
+        
+        // basically i want first 5 frames to be fast animated and the remaining next involving the beam to be slower
+        const animationDuration = fastFrameDelay * 5 + normalFrameDelay * 9;
+        
+        // so usually animation duration would be the FPS frame per sec but i want first fast then slow
+        // so i had to chop it up and make first 5 frames to be at 5ms delay and next 9frame at 80ms delay
 
         function animateCharging() {
-            let currentTime = performance.now();
-            let elapsedTime = currentTime - startTime;
-            let timeSinceLastFrame = currentTime - lastFrameTime;
+            let currentTime = performance.now(); //this will get time for each frame aslong as the animation is running
+            let elapsedTime = currentTime - startTime; // this is getting how much time has passed since space was pressed
+            let timeSinceLastFrame = currentTime - lastFrameTime; // how much dt has passed since the last frame
+            let frameDelay = frameIndex < 5 ? fastFrameDelay : normalFrameDelay; //framedelay for first 5 frames fast and slow for next 9
+            
+            if(frameIndex >= 10)
+                clearColumn(jet.x / tileSize); //when the beam finally shoots out at frame 10 and above clear the column
 
-            // Determine the delay based on the frameIndex
-            let frameDelay = frameIndex < 5 ? fastFrameDelay : normalFrameDelay;
-
+            //keep animating as long as the time since animation began != animation duration
+            /*if the time between the frame becomes say 5ms which is what i want for first 5 frames
+            then it should play the next frame, if that much time has not passed then it will keep
+            drawing the same frame basically I am holding a frame until the time for next frame has come*/
             if (elapsedTime < animationDuration) {
                 if (timeSinceLastFrame >= frameDelay) {
-                    
                     context.drawImage(laserImg, frameIndex * 64, 0, 64, 448, jet.x, 0, 64, 448);
-                    
-                    if (frameIndex >= 10) {
-                        clearColumn(jet.x / tileSize);
-                    }
-
                     frameIndex = (frameIndex + 1) % totalFrames; // Cycle through frames
-                    lastFrameTime = currentTime; // Update the last frame time
+                    lastFrameTime = currentTime;
                 }
-                else
-                    context.drawImage(laserImg, frameIndex * 64, 0, 64, 448, jet.x, 0, 64, 448);
-                context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height);
+                else{
+                    context.drawImage(laserImg, frameIndex*64, 0, 64, 448, jet.x, 0, 64, 448);
+                }
+                context.drawImage(jetImg, jet.x, jet.y, jet.width, jet.height); // make sure jet is always drawn on top of laser n not below
+                // Continue the animation loop as long as animation duration has not been reached
                 requestAnimationFrame(animateCharging);
             }
         }
@@ -219,10 +266,11 @@ function shootLaser(e) {
         // Start the animation loop
         animateCharging();
     }
-} //if user has a laser and presses space then call the clear fn and then use up the laser
+}//if user has a laser and presses space then call the clear fn and then use up the laser
 
 function obsMove() {
     // Move obstacles down the screen
+    
     for (let i = 0; i < objects.length; i++) {
         if (objects[i].y < tileSize * rows) {
             objects[i].y += obstacleSpeed; 
