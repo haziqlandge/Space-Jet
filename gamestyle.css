@@ -4,6 +4,7 @@
     margin: 0;
     padding: 0;
     font-family: "Chakra Petch";
+    overflow-x: hidden;
 }
 body{
     background-color: #131019ef;
@@ -48,6 +49,15 @@ body{
     background-color: #fa1e4e;
     box-shadow: 0 0 1rem #790a22;
 }
+.controls{
+    position: absolute;
+    top: 12vh;
+    left: 2vh;
+    width: 100%;
+    z-index: 3;
+    color: white;
+    font-weight: 100;
+}
 .container{
     position: absolute;
     top: 12vh;
@@ -56,7 +66,7 @@ body{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
+    
 }
 #board {
     background-image: url(galaxybg.png);
@@ -68,6 +78,42 @@ body{
 #txt{
     color:white;
     margin-bottom: -1rem;
+}
+.controls {
+    position: absolute;
+    top: 15vh;
+    left: 2vw;
+    width: 20vw;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px cyan;
+    font-family: "Chakra Petch";
+    text-align: left;
+    animation: fadeOut 1.5s ease-in-out 10s forwards;
+    z-index: 5;
+}
+
+.controls h3 {
+    font-size: 1.4rem;
+    color: cyan;
+}
+
+.controls p {
+    font-size: 1rem;
+    margin: 5px 0;
+    color: white;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; visibility: hidden; }
 }
 
 #popUp{
