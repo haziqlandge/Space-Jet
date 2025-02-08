@@ -10,6 +10,17 @@ body{
     background-color: #131019ef;
     
 }
+video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+a{
+    text-decoration: none;
+    color: inherit;
+}
 .ribbon{
     display: flex;
     position: fixed;
@@ -33,6 +44,9 @@ body{
     position: absolute;
     left: 1.3rem;
 }
+.gameName:hover{
+    cursor: pointer;
+}
 .rib-bt{
     padding: 0.5rem 1.2rem;
     font-size: 0.8rem;
@@ -46,8 +60,8 @@ body{
 }
 .rib-bt:hover{
     color: #131019;
-    background-color: #fa1e4e;
-    box-shadow: 0 0 1rem #790a22;
+    background-color: cyan;
+    box-shadow: 0 0 1rem rgb(0, 169, 169);
 }
 .controls{
     position: absolute;
@@ -107,8 +121,16 @@ body{
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+    0% {
+        height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    100% {
+        height: 30vh;
+        padding-top: 3vh;
+        padding-bottom: 3vh;
+    }
 }
 
 @keyframes fadeOut {
@@ -130,8 +152,87 @@ body{
     height: 30vh;
     width: 40vh;
     padding: 3vh 0;
-    background-color: #131019de;
-
-    border-radius: 3vh;
+    background: rgba(0, 0, 0, 0.6); /* Similar to .controls background */
+    border-radius: 10px; 
+    box-shadow: 0 0 10px cyan; 
+    font-family: "Chakra Petch";
     border: 1px solid darkcyan;
+    animation: fadeIn 0.2s ease-in-out forwards;
 }
+
+.about-box {
+    width: 700px;
+    height: 540px;
+    padding: 20px;
+    background: rgba(34, 34, 34, 0.614); 
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    position: absolute;
+    top: 54%; left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  .about-box::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .about-box::-webkit-scrollbar-thumb {
+    background: darkcyan;
+    border-radius: 24px;
+  }
+
+  .about-box::-webkit-scrollbar-track {
+    background: #ffffff;
+    border-radius: 24px;
+  }
+
+  .section {
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
+  }
+  .image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .section img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 20px;
+  }
+
+  .text {
+    flex: 1;
+  }
+
+  .left {
+    flex-direction: row;
+  }
+
+  .right {
+    flex-direction: row-reverse;
+  }
+
+  .social-links {
+    margin-top: 24px;
+    display: flex;
+    gap: 18px;
+  }
+  
+  .social-links a {
+    text-decoration: none;
+    font-size: 20px;
+    color: #bbbbbb;
+    transition: 0.3s ease;
+  }
+  
+  .social-links a:hover {
+    color: cyan;
+  }
+  

@@ -40,12 +40,14 @@ objImg.src = "obj.png";
 
 const totalFrames = 14;
 
-function start(){
+function start(e){
+    if (e.key === 'Enter') {  
     document.removeEventListener('keydown', start); 
     document.addEventListener('keydown', move);
     document.addEventListener('keydown', shootLaser); 
     randomObjs();
     requestAnimationFrame(update); // This function starts the loop for frame updates
+    }
 }
 
 document.addEventListener('keydown', start); // press any button => calls start
